@@ -109,6 +109,7 @@ def main()
     create_profile(id, data[:info][4], data[:info][5])
     data[:entries].each do |entry|
       entry_id = create_entry(id, entry[1], entry[2], entry[3])
+      titles[] = create_title(entry_id, entry[2])
       entries[entry[0]] = entry_id
     end
   end
@@ -162,6 +163,12 @@ def create_entry(user_id, private, title, body)
   q = 'INSERT INTO entries (user_id, private, body, created_at) VALUES (?,?,?,?)'
   db.prepare(q).execute(user_id, (private ? '1' : '0'), title + "\n" + body, random_timestamp())
   db.last_id # entry_id
+end
+
+def create_title(entry_id, title)
+  q = 'INSERT INTO titles (entry_id, title) VALUES (?,?)'
+  db.prepare(q).execute(entry_id, title)
+  nil
 end
 
 def add_comment(entry_id, user_id, comment)
